@@ -347,7 +347,7 @@ function setup_virtio_gpu() {
                 shift
                 ;;
             display=off)
-                GUEST_DISP_TYPE="-display none"
+                GUEST_DISP_TYPE="-display egl-headless"
                 shift
                 ;;
             *)
