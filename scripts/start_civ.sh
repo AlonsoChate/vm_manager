@@ -117,6 +117,11 @@ function setup_audio_dev() {
     $AUDIO_SETUP setMicGain &
 }
 
+function run_cam_service() {
+    chmod 777 $SCRIPTS_DIR/stream
+    sudo $SCRIPTS_DIR/stream /dev/video7 ""
+}
+
 function kill_daemon_proc() {
     local pid=$1
     local name=$2
@@ -850,6 +855,8 @@ check_nested_vt || exit -1
 setup_rpmb_dev || exit -1
 setup_swtpm
 setup_audio_dev || exit -1
-launch_guest
+launch_guest&
+sleep 20
+run_cam_service
 
 echo "Done: \"$(realpath $0) $@\""
