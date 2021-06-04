@@ -1,0 +1,6 @@
+<ports>
+    <port display="0" input="virtio1/input0" />
+    <port display="1" input="virtio2/input0" />
+    <port display="2" input="virtio3/input0" />
+    <port display="3" input="virtio4/input0" />
+</ports>
