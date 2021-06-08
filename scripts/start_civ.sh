@@ -632,7 +632,8 @@ function cleanup_lg_virtual_input_devices() {
 }
 
 function cleanup() {
-    cleanup_rpmb_dev
+    #comment out rpmb for PenguinPeak
+    #cleanup_rpmb_dev
     cleanup_thermal_mediation
     cleanup_battery_mediation
     cleanup_pt_pci
@@ -657,8 +658,10 @@ function launch_guest() {
     # If any other virtio devices are passed to QEMU before RPMB,
     # virtual port device node will be no longer named /dev/vport0p1,
     # it leads secure storage daemon working abnormal.
-    EXE_CMD+="$GUEST_RPMB_DEV \
-    "
+
+    ## Comment out RPMB for PenguinPeak.
+    #EXE_CMD+="$GUEST_RPMB_DEV \
+    #"
 
     # Expand new introduced device here.
     EXE_CMD+="$GUEST_LG_INPUT_DEVICES \
@@ -680,7 +683,6 @@ function launch_guest() {
               $GUEST_TIME_KEEP \
               $GUEST_QMP_PIPE \
               $GUEST_POWER_BUTTON \
-              $GUSET_VTPM \
               $GUEST_AAF \
               $GUEST_KIRQ_CHIP \
               $GUEST_USB_XHCI_OPT \
@@ -689,6 +691,8 @@ function launch_guest() {
               $GUEST_SHM_CMD \
               $GUEST_SPICE_CMD \
     "
+              #Comment out VTPM for PenguinPeak
+              #$GUSET_VTPM \
 
     echo $EXE_CMD
     eval $EXE_CMD
@@ -874,8 +878,9 @@ parse_arg "$@" || exit -1
 check_kernel_version || exit -1
 check_nested_vt || exit -1
 
-setup_rpmb_dev || exit -1
-setup_swtpm
+#Comment out rpmb and vtpm for Penguin Peak
+#setup_rpmb_dev || exit -1
+#setup_swtpm
 setup_audio_dev || exit -1
 launch_guest&
 sleep 20
