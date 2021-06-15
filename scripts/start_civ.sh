@@ -26,7 +26,7 @@ GUEST_RPMB_DEV_SOCK=
 GUEST_THERMAL_DAEMON_PID=
 GUEST_BATTERY_DAEMON_PID=
 GUEST_IMAGE=$WORK_DIR/android.qcow2
-GUEST_VSOCK="-device vhost-vsock-pci,id=vhost-vsock-pci0,guest-cid=3"
+GUEST_VSOCK="-device vhost-vsock-pci,id=vhost-vsock-pci0,guest-cid=3,guest-cid=4"
 GUEST_SHARE_FOLDER=
 GUEST_SMBIOS_SERIAL=$(dmidecode -t 2 | grep -i serial | awk '{print $3}')
 GUEST_QMP_SOCK=$WORK_DIR/.civ.qmp.sock
