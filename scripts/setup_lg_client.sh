@@ -6,6 +6,9 @@ function ubu_install_lg_client(){
     touch /dev/shm/looking-glass1 && chmod 660 /dev/shm/looking-glass1
     touch /dev/shm/looking-glass2 && chmod 660 /dev/shm/looking-glass2
     touch /dev/shm/looking-glass3 && chmod 660 /dev/shm/looking-glass3
+    sudo mkdir /opt/lg
+    sudo mkdir /opt/lg/bin
+    sudo cp LG_B1_Client /opt/lg/bin/
 }
 
 echo "set up lg client start"
