@@ -21,7 +21,7 @@ then
 	fi
 fi
 
-qemu-img create -f qcow2 android.qcow2 32G
+qemu-img create -f qcow2 android.qcow2 16G
 
 [ -d "./flashfiles_decompress" ] && rm -rf "./flashfiles_decompress"
 mkdir ./flashfiles_decompress
@@ -29,6 +29,10 @@ unzip $1 -d ./flashfiles_decompress
 dd if=/dev/zero of=./flash.vfat bs=63M count=160
 mkfs.vfat ./flash.vfat
 mcopy -i flash.vfat flashfiles_decompress/* ::
+
+
+data_image=./userdata.img
+dd if=/dev/zero of=$data_image bs=1M count=4096
 
 ovmf_file="./OVMF.fd"
 [ ! -f $ovmf_file ] && ovmf_file="/usr/share/qemu/OVMF.fd"

@@ -70,6 +70,12 @@ GUEST_STATIC_OPTION="\
  -nodefaults"
 
 
+data_image=$WORK_DIR/data2.img
+GUEST_PARTITION="\
+ -drive file=$data_image,if=none,id=disk2 \
+ -device virtio-blk-pci,drive=disk2,bootindex=2 \
+"
+
 #------------------------------------------------------         Functions       ----------------------------------------------------------
 function check_nested_vt() {
     local nested=$(cat /sys/module/kvm_intel/parameters/nested)
@@ -643,6 +649,7 @@ function launch_guest() {
               $GUEST_USB_XHCI_OPT \
               $GUEST_STATIC_OPTION \
               $GUEST_EXTRA_QCMD \
+	      $GUEST_PARTITION \
     "
 
     echo $EXE_CMD
