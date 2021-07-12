@@ -25,6 +25,7 @@ GUEST_RPMB_DEV_PID=
 GUEST_RPMB_DEV_SOCK=
 GUEST_THERMAL_DAEMON_PID=
 GUEST_BATTERY_DAEMON_PID=
+GUEST_CLIPBOARD_DAEMON_PID=
 GUEST_IMAGE=$WORK_DIR/android.qcow2
 GUEST_VSOCK="-device vhost-vsock-pci,id=vhost-vsock-pci0,guest-cid=3,guest-cid=4"
 GUEST_SHARE_FOLDER=
@@ -631,6 +632,19 @@ function cleanup_lg_virtual_input_devices() {
     sudo killall lg-input-manager
 }
 
+function setup_guest_clipboard() {
+    local guest_clipboard_daemon=$SCRIPTS_DIR/LG_B1_Client
+    local guest_clipboard_log=$WORK_DIR/guest_clipboard.log
+    if [ -f $guest_clipboard_daemon ]; then
+        $guest_clipboard_daemon guestClipboard:enable=true > $guest_clipboard_log 2>&1 &
+        GUEST_CLIPBOARD_DAEMON_PID=$!
+    fi
+}
+
+function cleanup_guest_clipboard() {
+    kill_daemon_proc "$GUEST_CLIPBOARD_DAEMON_PID" "LG_B1_Client"
+}
+
 function cleanup() {
     #comment out rpmb for PenguinPeak
     #cleanup_rpmb_dev
@@ -638,6 +652,7 @@ function cleanup() {
     cleanup_battery_mediation
     cleanup_pt_pci
     cleanup_lg_virtual_input_devices
+    cleanup_guest_clipboard
 }
 
 function error() {
@@ -850,6 +865,10 @@ function parse_arg() {
 
             --virtual-lg-input-devices)
                 create_lg_virtual_input_devices
+                ;;
+
+            --guest-clipboard)
+                setup_guest_clipboard
                 ;;
 
             -?*)
