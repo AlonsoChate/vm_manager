@@ -415,7 +415,7 @@ fi" > /usr/local/share/sleep-inhibitor/plugins/is-screen-on
 
 # This is now required for clipboard, so install dependencies during setup-host
 function ubu_install_lg_client(){
-    sudo apt install -y binutils-dev cmake fonts-freefont-ttf libsdl2-dev libsdl2-ttf-dev libspice-protocol-dev libfontconfig1-dev libx11-dev nettle-dev
+    sudo apt install -y binutils-dev cmake fonts-freefont-ttf libsdl2-dev libsdl2-ttf-dev libspice-protocol-dev libfontconfig1-dev libx11-dev nettle-dev daemon
 }
 
 function show_help() {

@@ -13,6 +13,7 @@ WORK_DIR=$PWD
 SCRIPTS_DIR=$WORK_DIR/scripts
 
 EMULATOR_PATH=$(which qemu-system-x86_64)
+CLIPBOARD_SERVICE=
 GUEST_MEM="-m 2G"
 GUEST_CPU_NUM="-smp 1"
 GUEST_DISK="-drive file=$WORK_DIR/android.qcow2,if=none,id=disk1,discard=unmap,detect-zeroes=unmap"
@@ -25,7 +26,6 @@ GUEST_RPMB_DEV_PID=
 GUEST_RPMB_DEV_SOCK=
 GUEST_THERMAL_DAEMON_PID=
 GUEST_BATTERY_DAEMON_PID=
-GUEST_CLIPBOARD_DAEMON_PID=
 GUEST_IMAGE=$WORK_DIR/android.qcow2
 GUEST_VSOCK="-device vhost-vsock-pci,id=vhost-vsock-pci0,guest-cid=3,guest-cid=4"
 GUEST_SHARE_FOLDER=
@@ -633,16 +633,19 @@ function cleanup_lg_virtual_input_devices() {
 }
 
 function setup_guest_clipboard() {
-    local guest_clipboard_daemon=$SCRIPTS_DIR/LG_B1_Client
-    local guest_clipboard_log=$WORK_DIR/guest_clipboard.log
-    if [ -f $guest_clipboard_daemon ]; then
-        $guest_clipboard_daemon guestClipboard:enable=true > $guest_clipboard_log 2>&1 &
-        GUEST_CLIPBOARD_DAEMON_PID=$!
+    local host_clipboard_daemon=$SCRIPTS_DIR/LG_B1_Client
+    local host_clipboard_log=$WORK_DIR/guest_clipboard.log
+    CLIPBOARD_SERVICE="IntelClipboardService"
+    rm -f $host_clipboard_log
+    if [ -f $host_clipboard_daemon ]; then
+        daemon -U --name=$CLIPBOARD_SERVICE --respawn --delay=10 --output=$host_clipboard_log $host_clipboard_daemon guestClipboard:enable=true
     fi
 }
 
 function cleanup_guest_clipboard() {
-    kill_daemon_proc "$GUEST_CLIPBOARD_DAEMON_PID" "LG_B1_Client"
+    if [ "$CLIPBOARD_SERVICE" != "" ]; then
+        daemon --name=$CLIPBOARD_SERVICE --stop
+    fi
 }
 
 function cleanup() {
@@ -651,8 +654,8 @@ function cleanup() {
     cleanup_thermal_mediation
     cleanup_battery_mediation
     cleanup_pt_pci
-    cleanup_lg_virtual_input_devices
     cleanup_guest_clipboard
+    cleanup_lg_virtual_input_devices
 }
 
 function error() {
