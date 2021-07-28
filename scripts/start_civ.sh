@@ -71,6 +71,7 @@ GUEST_STATIC_OPTION="\
  -smbios type=2,serial=$GUEST_SMBIOS_SERIAL \
  -nodefaults"
 
+GUEST_PARTITION=
 
 #------------------------------------------------------         Functions       ----------------------------------------------------------
 function check_non_graphical_target() {
@@ -112,6 +113,20 @@ function start_thermal_daemon() {
     sudo cp $SCRIPTS_DIR/thermald.service  /lib/systemd/system
     sudo systemctl daemon-reload
     sudo systemctl start thermald.service
+}
+
+function set_user(){
+    [ ! -d "$WORK_DIR/userdata" ] && mkdir $WORk_DIR/userdata
+    if [ $(id -u) = 0 ]; then
+           data_image=$WORK_DIR/userdata/$SUDO_USER.img
+    else
+           data_image=$WORK_DIR/userdata/$USER.img
+    fi
+    [ ! -f $data_image ] && qemu-img create -f qcow2 $data_image 16G
+    GUEST_PARTITION="\
+         -drive file=$data_image,if=none,id=disk2 \
+         -device virtio-blk-pci,drive=disk2,bootindex=2 \
+    "
 }
 
 function setup_audio_dev() {
@@ -708,6 +723,7 @@ function launch_guest() {
               $GUEST_EXTRA_QCMD \
               $GUEST_SHM_CMD \
               $GUEST_SPICE_CMD \
+	      $GUEST_PARTITION \
     "
               #Comment out VTPM for PenguinPeak
               #$GUSET_VTPM \
@@ -904,6 +920,7 @@ check_nested_vt || exit -1
 #setup_rpmb_dev || exit -1
 #setup_swtpm
 setup_audio_dev || exit -1
+set_user
 launch_guest&
 sleep 30
 run_cam_service
